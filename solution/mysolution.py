@@ -17,7 +17,8 @@ class MySolution(Solution):
     """
     Our_State_Definition = ('airplane_state', 'current_weight', 'max_weight', 'available_routes', 'current_airport', 'available_cargo', 'available_actions')
     episode_num = 0
-    df = pd.DataFrame()
+    column_names = ['State', 'Action', 'Count', 'Value']
+    df = pd.DataFrame(columns=column_names)
 
     def __init__(self):
         super().__init__()
@@ -56,7 +57,7 @@ class MySolution(Solution):
         action = self._action_helper.sample_valid_actions(obs) #We don't have a policy yet, so we'll just use a random agent for now
 
         #Create a new row for this state and action
-        new_df_entry = pd.DataFrame({'State': [reduced_state], 'action': [action], 'episode': [self.episode_num], 'episode_score': ["TBD"]})
+        new_df_entry = pd.DataFrame({'State': [reduced_state], 'Action': [action], 'Count': [self.episode_num], 'Value': ["TBD"]})
 
         #add the new entry into our current dataframe
         self.df = pd.concat([self.df, new_df_entry], ignore_index=True)

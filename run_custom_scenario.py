@@ -66,35 +66,71 @@ env = AirliftEnv(
 #     ),
 #     renderer=FlatRenderer(show_routes=True)
 # )
-
-master_df = pd.DataFrame()
+filepath = ("'master_database_updated.csv'")
+column_names = ['State', 'Action', 'Count', 'Value']
+master_df = pd.read_csv(filepath)
 
 """
 Run a single episode utilizing the Solution we wrote with the above environment. 
 """
 MySolution.episode_num = 1
+
+iterations = 10
 my_solution = MySolution()
-env_info, metrics, time_taken, total_solution_time = \
-  doepisode(env,
-            solution=my_solution,
-            render=False,
-            render_sleep_time=0, # Set this to 0.1 to slow down the simulation
-            env_seed=100,
-            solution_seed=200)
+
+for i in range(iterations):
+    env_info, metrics, time_taken, total_solution_time = \
+    doepisode(env,
+                solution=my_solution,
+                render=False,
+                render_sleep_time=0, # Set this to 0.1 to slow down the simulation
+                env_seed=100,
+                solution_seed=i)
 
 
 
-#Now that the episode is finished, we backtrack and update the score for all out state action pairs
-condition = my_solution.df['episode_score'] == "TBD" 
-my_solution.df.loc[condition, 'episode_score'] = metrics.score
-master_df = pd.concat([master_df, my_solution.df], ignore_index=True)
+    #Now that the episode is finished, we backtrack and update the score for all out state action pairs
+    condition = my_solution.df['Value'] == "TBD" 
+    my_solution.df.loc[condition, 'Value'] = -1 * metrics.score
 
-# Specify the csv file path
-csv_file_path = 'DirectEvaluationData.csv'
-# Export the DataFrame to a csv file
-master_df.to_csv(csv_file_path, index=False)
+    # Iterate through the current database
+    # Assuming 'State' and 'Action' are the columns in both dataframes
+    columns_to_match = ['State', 'Action']
 
-print("Missed Deliveries: {}".format(metrics.missed_deliveries))
-print("Lateness:          {}".format(metrics.total_lateness))
-print("Total flight cost: {}".format(metrics.total_cost))
-print("Score:             {}".format(metrics.score))
+    # Iterate through the current database
+    for index, row in my_solution.df.iterrows():
+        # Extract the values from the current row
+        values_to_check = [row[column] for column in columns_to_match]
+        new_value = row['Value']
+
+        # Check if there is a matching entry in the master database
+        match = (master_df[columns_to_match] == values_to_check).all(axis=1)
+
+        if match.any():
+            # Update the existing entry in the master database
+            master_df.loc[match, 'Value'] = ((master_df.loc[match, 'Value'] * master_df.loc[match, 'Count'])  + new_value) / (master_df.loc[match, 'Count'] + 1)
+            master_df.loc[match, 'Count'] += 1
+            
+        else:
+            # If no match found, add a new entry to the master database
+            new_entry = dict(zip(columns_to_match, values_to_check))
+            new_entry.update({'Count': 1, 'Value': new_value})
+
+            # Create a DataFrame for the new entry
+            new_entry_df = pd.DataFrame([new_entry])
+
+            # Concatenate the new entry DataFrame with the master_df
+            master_df = pd.concat([master_df, new_entry_df], ignore_index=True)
+
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    print("EPISODE NUMBER:" + str(i))
+    print("Missed Deliveries: {}".format(metrics.missed_deliveries))
+    print("Lateness:          {}".format(metrics.total_lateness))
+    print("Total flight cost: {}".format(metrics.total_cost))
+    print("Score:             {}".format(metrics.score))
+    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+
+
+
+# Save the updated master database to a file
+master_df.to_csv('master_database_updated.csv', index=False)
