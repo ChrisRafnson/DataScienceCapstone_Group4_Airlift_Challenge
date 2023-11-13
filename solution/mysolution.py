@@ -19,9 +19,15 @@ class MySolution(Solution):
     episode_num = 0
     column_names = ['State', 'Action', 'Count', 'Value']
     df = pd.DataFrame(columns=column_names)
+    reference_df = pd.DataFrame(columns=column_names)
+    actionsReturned = 0
 
     def __init__(self):
         super().__init__()
+
+    def updateReference(self, newDataFrame):
+        self.reference_df = newDataFrame
+
        
 
     def reset(self, obs, observation_spaces=None, action_spaces=None, seed=None):
@@ -48,19 +54,36 @@ class MySolution(Solution):
         agent = gs["agents"]["a_0"] #grab the agent
         reduced_state = [agent["state"], #current agent state
             agent["current_weight"], #current weight of agent
-            agent["max_weight"], #max weight of agent
+            # agent["max_weight"], #max weight of agent
             agent["available_routes"], #available routes
             agent["current_airport"], #location of the agent
             cargo_array] #array of available cargo
         
 
+        # action = 0
+        # #Select the best action
+        # maxval = -999999999
+        # for index, row in self.reference_df.iterrows():
+        #     if row['State'] == reduced_state:
+        #         if row['Value'] > maxval:
+        #             action = row['Action']
+        #             maxval = row['Value'] 
+
+        # if action == 0:
+        #     action = self._action_helper.sample_valid_actions(obs)
+             
+
         action = self._action_helper.sample_valid_actions(obs) #We don't have a policy yet, so we'll just use a random agent for now
 
         #Create a new row for this state and action
-        new_df_entry = pd.DataFrame({'State': [reduced_state], 'Action': [action], 'Count': [self.episode_num], 'Value': ["TBD"]})
+        new_df_entry = pd.DataFrame({'State': [reduced_state], 'Action': [action], 'Count': self.episode_num, 'Value': "TBD"})
 
         #add the new entry into our current dataframe
         self.df = pd.concat([self.df, new_df_entry], ignore_index=True)
+
+        self.actionsReturned += 1
+        if(self.actionsReturned % 100 == 0):
+            print(self.actionsReturned)
         return action 
 
 class ShortestPath(Solution):

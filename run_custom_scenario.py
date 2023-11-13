@@ -29,14 +29,14 @@ env = AirliftEnv(
     AirliftWorldGenerator(
         plane_types=[PlaneType(id=0, max_range=1.0, speed=0.05, max_weight=5)],
         airport_generator=RandomAirportGenerator(mapgen=PerlinMapGenerator(),
-                                                 max_airports=8,
-                                                 num_drop_off_airports=2,
-                                                 num_pick_up_airports=2,
+                                                 max_airports=3,
+                                                 num_drop_off_airports=1,
+                                                 num_pick_up_airports=1,
                                                  processing_time=1,
                                                  working_capacity=100,
                                                  airports_per_unit_area=2),
         route_generator=RouteByDistanceGenerator(route_ratio=1.25),
-        cargo_generator=StaticCargoGenerator(num_of_tasks=4,
+        cargo_generator=StaticCargoGenerator(num_of_tasks=1,
                                              soft_deadline_multiplier=10,
                                              hard_deadline_multiplier=20),
         airplane_generator=AirplaneGenerator(1),
@@ -45,7 +45,7 @@ env = AirliftEnv(
 )
 
 # # A more complicated scenario with dynamic events
-# env = AirliftEnv(
+# env = AirliftEnv( 
 #     AirliftWorldGenerator(
 #         plane_types=[PlaneType(id=0, max_range=1.0, speed=0.05, max_weight=5)],
 #         airport_generator=RandomAirportGenerator(mapgen=PerlinMapGenerator(),
@@ -66,19 +66,19 @@ env = AirliftEnv(
 #     ),
 #     renderer=FlatRenderer(show_routes=True)
 # )
-filepath = ("'master_database_updated.csv'")
+filepath = ("master_database_updated.csv")
 column_names = ['State', 'Action', 'Count', 'Value']
-master_df = pd.read_csv(filepath)
-
-"""
-Run a single episode utilizing the Solution we wrote with the above environment. 
-"""
+# master_df = pd.read_csv(filepath) 
+master_df = pd.DataFrame(columns=column_names)
+ 
 MySolution.episode_num = 1
 
-iterations = 10
+iterations = 100 
 my_solution = MySolution()
+MySolution.updateReference(my_solution, master_df) #Update the policy functions database of state action pairs by passing it the current master dataframe
 
 for i in range(iterations):
+
     env_info, metrics, time_taken, total_solution_time = \
     doepisode(env,
                 solution=my_solution,
@@ -86,6 +86,8 @@ for i in range(iterations):
                 render_sleep_time=0, # Set this to 0.1 to slow down the simulation
                 env_seed=100,
                 solution_seed=i)
+
+    
 
 
 
@@ -97,7 +99,7 @@ for i in range(iterations):
     # Assuming 'State' and 'Action' are the columns in both dataframes
     columns_to_match = ['State', 'Action']
 
-    # Iterate through the current database
+    # Iterate through the current database 
     for index, row in my_solution.df.iterrows():
         # Extract the values from the current row
         values_to_check = [row[column] for column in columns_to_match]
@@ -122,15 +124,19 @@ for i in range(iterations):
             # Concatenate the new entry DataFrame with the master_df
             master_df = pd.concat([master_df, new_entry_df], ignore_index=True)
 
-    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-    print("EPISODE NUMBER:" + str(i))
-    print("Missed Deliveries: {}".format(metrics.missed_deliveries))
-    print("Lateness:          {}".format(metrics.total_lateness))
-    print("Total flight cost: {}".format(metrics.total_cost))
-    print("Score:             {}".format(metrics.score))
-    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+
+    
+
+    MySolution.updateReference(my_solution, master_df) #Update the policy functions database of state action pairs by passing it the current master dataframe
+
+
+    # print("Missed Deliveries: {}".format(metrics.missed_deliveries))
+    # print("Lateness:          {}".format(metrics.total_lateness))
+    # print("Total flight cost: {}".format(metrics.total_cost))
+    print("Score:             {}".format(metrics.score) + "EPISODE NUMBER:" + str(i))
+
 
 
 
 # Save the updated master database to a file
-master_df.to_csv('master_database_updated.csv', index=False)
+master_df.to_csv(filepath, index=False)
