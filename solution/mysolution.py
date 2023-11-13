@@ -9,6 +9,8 @@ from airlift.envs import ActionHelper
 #These modules have been imported after the fact, they are necessary only for our solution
 #The modules above are necessary for the simulator and the baseline solutions
 import pandas as pd
+import random
+import ast
 
 class MySolution(Solution):
     """
@@ -21,6 +23,7 @@ class MySolution(Solution):
     df = pd.DataFrame(columns=column_names)
     reference_df = pd.DataFrame(columns=column_names)
     actionsReturned = 0
+
 
     def __init__(self):
         super().__init__()
@@ -40,7 +43,7 @@ class MySolution(Solution):
     def policies(self, obs, dones):
         # Use the acion helper to generate an action
         gs = self.get_state(obs)
-
+        
         cargo_array = [] #Get the necessary values from each cargo entry
         active_cargo = gs["active_cargo"]
         for cargo in active_cargo:
@@ -51,29 +54,49 @@ class MySolution(Solution):
                 cargo[3] 
             ])
 
+        # agent = gs["agents"]["a_0"] #grab the agent
+        # reduced_state = [agent["state"], #current agent state
+        #     agent["current_weight"], #current weight of agent
+        #     # agent["max_weight"], #max weight of agent
+        #     agent["available_routes"], #available routes
+        #     agent["current_airport"], #location of the agent
+        #     cargo_array] #array of available 
+        
         agent = gs["agents"]["a_0"] #grab the agent
         reduced_state = [agent["state"], #current agent state
-            agent["current_weight"], #current weight of agent
+            # agent["current_weight"], #current weight of agent
             # agent["max_weight"], #max weight of agent
             agent["available_routes"], #available routes
-            agent["current_airport"], #location of the agent
-            cargo_array] #array of available cargo
+            agent["current_airport"]] #location of the agent
+            # cargo_array] #array of available cargo
         
+        #Select a action from the direct eval policy 100% of the time
 
-        # action = 0
+        # action = self._action_helper.sample_valid_actions(obs) 
         # #Select the best action
         # maxval = -999999999
         # for index, row in self.reference_df.iterrows():
-        #     if row['State'] == reduced_state:
-        #         if row['Value'] > maxval:
-        #             action = row['Action']
-        #             maxval = row['Value'] 
+        #     string_state = str(reduced_state)
+        #     if row['State'] == string_state:
+        #         if row['Value'] >= maxval:
+        #             action = ast.literal_eval(row['Action'])
+        #             maxval = row['Value']    
 
-        # if action == 0:
-        #     action = self._action_helper.sample_valid_actions(obs)
+        #Select mainly from the direct eval policy with a chance to select an action from the random policy 
+
+        # if random.random() > .75:
+        #     maxval = -999999999
+        #     for index, row in self.reference_df.iterrows():
+        #         if row['State'] == reduced_state:
+        #             if row['Value'] > maxval:
+        #                 action = row['Action']
+        #                 maxval = row['Value'] 
+        # else:
+        #    action = self._action_helper.sample_valid_actions(obs)
              
-
+        #Select a random action
         action = self._action_helper.sample_valid_actions(obs) #We don't have a policy yet, so we'll just use a random agent for now
+
 
         #Create a new row for this state and action
         new_df_entry = pd.DataFrame({'State': [reduced_state], 'Action': [action], 'Count': self.episode_num, 'Value': "TBD"})
@@ -81,9 +104,9 @@ class MySolution(Solution):
         #add the new entry into our current dataframe
         self.df = pd.concat([self.df, new_df_entry], ignore_index=True)
 
-        self.actionsReturned += 1
-        if(self.actionsReturned % 100 == 0):
-            print(self.actionsReturned)
+        # self.actionsReturned += 1
+        # if(self.actionsReturned % 100 == 0):
+        #     print(self.actionsReturned)
         return action 
 
 class ShortestPath(Solution):
