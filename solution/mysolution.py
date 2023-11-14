@@ -17,22 +17,19 @@ class MySolution(Solution):
     Utilizing this class for your solution is required for your submission. The primary solution algorithm will go inside the
     policy function.
     """
-    Our_State_Definition = ('airplane_state', 'current_weight', 'max_weight', 'available_routes', 'current_airport', 'available_cargo', 'available_actions')
-    episode_num = 0
+    episode_num = 0 #initialize episode number
     column_names = ['State', 'Action', 'Count', 'Value']
-    df = pd.DataFrame(columns=column_names)
-    reference_df = pd.DataFrame(columns=column_names)
-    actionsReturned = 0
-
+    df = pd.DataFrame(columns=column_names) #This is the temporary dataframe to record the state-action pairs only for this episode
+    reference_df = pd.DataFrame(columns=column_names) #This is our "model", what we are using and referencing to make decisions.
 
     def __init__(self):
         super().__init__()
 
+    #This function just allows us to pass in the master dataframe to use as our reference dataframe
     def updateReference(self, newDataFrame):
         self.reference_df = newDataFrame
 
-       
-
+    #This was given by the challenge
     def reset(self, obs, observation_spaces=None, action_spaces=None, seed=None):
         # Currently, the evaluator will NOT pass in an observation space or action space (they will be set to None)
         super().reset(obs, observation_spaces, action_spaces, seed)
@@ -40,29 +37,32 @@ class MySolution(Solution):
         # Create an action helper using our random number generator
         self._action_helper = ActionHelper(self._np_random)
 
+    #The meat of the algorithm, this is where the decisions are made in theory.
     def policies(self, obs, dones):
-        # Use the acion helper to generate an action
+
+        #State Representation
+        #=============================================================================================================================
+
+        # get the complete state of the environment
         gs = self.get_state(obs)
         
-        cargo_array = [] #Get the necessary values from each cargo entry
-        active_cargo = gs["active_cargo"]
-        for cargo in active_cargo:
-            cargo_array.append([
-                cargo[0],
-                cargo[1],
-                cargo[2],
-                cargo[3] 
-            ])
+        # The following snippet grabs the necessary cargo information for our state, this will be useful later
 
-        # agent = gs["agents"]["a_0"] #grab the agent
-        # reduced_state = [agent["state"], #current agent state
-        #     agent["current_weight"], #current weight of agent
-        #     # agent["max_weight"], #max weight of agent
-        #     agent["available_routes"], #available routes
-        #     agent["current_airport"], #location of the agent
-        #     cargo_array] #array of available 
-        
-        agent = gs["agents"]["a_0"] #grab the agent
+        # cargo_array = [] #Get the necessary values from each cargo entry
+        # active_cargo = gs["active_cargo"]
+        # for cargo in active_cargo:
+        #     cargo_array.append([
+        #         cargo[0],
+        #         cargo[1],
+        #         cargo[2],
+        #         cargo[3] 
+        #     ])
+
+        agent = gs["agents"]["a_0"] #grab the agent, there is only one currently
+
+        # Most of the variables that we find useful for our state are contained within the "agent" class
+        # this variable takes the values that we want from the "agent" class and stores them. This is
+        # what is recorded in our state-action pair dataframe. This can be adjusted as we like
         reduced_state = [agent["state"], #current agent state
             # agent["current_weight"], #current weight of agent
             # agent["max_weight"], #max weight of agent
@@ -70,33 +70,29 @@ class MySolution(Solution):
             agent["current_airport"]] #location of the agent
             # cargo_array] #array of available cargo
         
-        #Select a action from the direct eval policy 100% of the time
+        #Decision Making
+        #=============================================================================================================================
 
-        # action = self._action_helper.sample_valid_actions(obs) 
+
+        #Direct Evaluation Policy - This is what we're having trouble with
+
+        # action = self._action_helper.sample_valid_actions(obs) # grab a random action in case we can't find a valid action
+
         # #Select the best action
+
         # maxval = -999999999
-        # for index, row in self.reference_df.iterrows():
-        #     string_state = str(reduced_state)
-        #     if row['State'] == string_state:
+        # for index, row in self.reference_df.iterrows(): #Search the database for a match
+        #     if row['State'] == reduced_state: #If our state has been encountered before, then we find the best action from that state
         #         if row['Value'] >= maxval:
-        #             action = ast.literal_eval(row['Action'])
+        #             action = row['Action']
         #             maxval = row['Value']    
-
-        #Select mainly from the direct eval policy with a chance to select an action from the random policy 
-
-        # if random.random() > .75:
-        #     maxval = -999999999
-        #     for index, row in self.reference_df.iterrows():
-        #         if row['State'] == reduced_state:
-        #             if row['Value'] > maxval:
-        #                 action = row['Action']
-        #                 maxval = row['Value'] 
-        # else:
-        #    action = self._action_helper.sample_valid_actions(obs)
              
+        #This is the random policy agent, works just fine
+
         #Select a random action
         action = self._action_helper.sample_valid_actions(obs) #We don't have a policy yet, so we'll just use a random agent for now
 
+        #=============================================================================================================================
 
         #Create a new row for this state and action
         new_df_entry = pd.DataFrame({'State': [reduced_state], 'Action': [action], 'Count': self.episode_num, 'Value': "TBD"})
@@ -104,9 +100,6 @@ class MySolution(Solution):
         #add the new entry into our current dataframe
         self.df = pd.concat([self.df, new_df_entry], ignore_index=True)
 
-        # self.actionsReturned += 1
-        # if(self.actionsReturned % 100 == 0):
-        #     print(self.actionsReturned)
         return action 
 
 class ShortestPath(Solution):
