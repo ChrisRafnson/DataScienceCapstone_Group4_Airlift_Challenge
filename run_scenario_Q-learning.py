@@ -24,7 +24,7 @@ DynamicCargoGenerator we can also use the StaticCargoGenerator.
 Uncomment the scenario below that you would like to use.
 """
 
-# A simple scenario with no dynamic events
+# # A simple scenario with no dynamic events
 env = AirliftEnv(
     AirliftWorldGenerator(
         plane_types=[PlaneType(id=0, max_range=1.0, speed=0.05, max_weight=5)],
@@ -43,6 +43,28 @@ env = AirliftEnv(
     ),
     renderer=FlatRenderer(show_routes=True)
 )
+
+# A simple scenario with dynamic cargo generation
+# env = AirliftEnv(
+#     AirliftWorldGenerator(
+#         plane_types=[PlaneType(id=0, max_range=1.0, speed=0.05, max_weight=5)],
+#         airport_generator=RandomAirportGenerator(mapgen=PerlinMapGenerator(),
+#                                                  max_airports=3,
+#                                                  num_drop_off_airports=1,
+#                                                  num_pick_up_airports=1,
+#                                                  processing_time=1,
+#                                                  working_capacity=100,
+#                                                  airports_per_unit_area=2),
+#         route_generator=RouteByDistanceGenerator(route_ratio=1.25),
+#         cargo_generator=DynamicCargoGenerator(cargo_creation_rate=1 / 100,
+#                                               soft_deadline_multiplier=4,
+#                                               hard_deadline_multiplier=12,
+#                                               num_initial_tasks=1,
+#                                               max_cargo_to_create=5),
+#         airplane_generator=AirplaneGenerator(1),
+#     ),
+#     renderer=FlatRenderer(show_routes=True)
+# )
 
 # # A more complicated scenario with dynamic events
 # env = AirliftEnv( 
@@ -69,7 +91,7 @@ env = AirliftEnv(
 
 
 #Initial value for episode number
-Q_learning.episode_num = 1
+Q_learning.episode_num = 0
 
 iterations = 150 #This sets the number of episodes to run
 
@@ -85,7 +107,7 @@ for i in range(iterations):
     doepisode(env,
                 solution=my_solution,
                 render=False,
-                render_sleep_time=0, # Set this to 0.1 to slow down the simulation
+                render_sleep_time=0., # Set this to 0.1 to slow down the simulation
                 env_seed=100,
                 solution_seed=i)
 
@@ -94,7 +116,19 @@ for i in range(iterations):
     # print("Missed Deliveries: {}\n".format(metrics.missed_deliveries))
     # print("Lateness:          {}\n".format(metrics.total_lateness))
     # print("Total flight cost: {}\n".format(metrics.total_cost))
-    print("Score:             {}\n".format(metrics.score) + "EPISODE NUMBER:" + str(i)) #prints out the score for the episode that just occured
+
+    #Factor the episode score into the algorithm as one final reward
+    if metrics.missed_deliveries > 0:
+        reward = -50 * metrics.missed_deliveries
+    else:
+        reward = (1/metrics.score) * 100
+
+    my_solution.update_Qval(my_solution.previous_reduced_state, my_solution.last_action_taken, my_solution.current_reduced_state, manual_reward=reward)
+    
+    print("EPISODE NUMBER: {}".format(i))
+    print("         Score: {}".format(metrics.score)) #prints out the score for the episode that just occured
+    print(" Epsilon Value: {}".format(my_solution.epsilon * my_solution.epsilon_decay_rate ** my_solution.episode_num)) #prints out the score for the episode that just occured
+    print("=============================================================================================")
 
 
 
