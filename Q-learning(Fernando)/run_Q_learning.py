@@ -106,7 +106,7 @@ for i in range(iterations):
     doepisode(env,
                 solution=my_solution,
                 render=False,
-                render_sleep_time=0., # Set this to 0.1 to slow down the simulation
+                render_sleep_time=0, # Set this to 0.1 to slow down the simulation
                 env_seed=100,
                 solution_seed=i)
 
