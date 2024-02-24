@@ -22,18 +22,23 @@ class Q_learning(Solution):
     """
     actions_returned = 0
     episode_num = 0 #initialize episode number
-    learning_rate = .5 
-    discount_factor = 1
-    epsilon = .75
-    epsilon_decay_rate = .95
+    learning_rate = .7
+    discount_factor = .95
+    epsilon = .30
+    epsilon_decay_rate = .98
     Q_table = dict()
 
-    current_active_cargo = 0 #The number of active cargo in this step
-    num_active_cargo = 0 #The number of active cardo in the last step
+    previous_reduced_state = None
+    last_action_taken = None
+    current_reduced_state = None
+
+    # current_active_cargo = 0 #The number of active cargo in this step
+    # num_active_cargo = 0 #The number of active cardo in the last step
+
+    missed_deliveries_past = 0 #number of missed deliveries at the time of the last step
 
     def __init__(self):
         super().__init__()
-        
 
     #This function just allows us to pass in the master dataframe to use as our reference dataframe
     def updateReference(self, newDict):
@@ -48,19 +53,23 @@ class Q_learning(Solution):
         self.epsilon = newEpsilon
         self.epsilon_decay_rate = newDecayRate
 
-    def rewardFunction(self, state):
+    
+    def rewardFunction(self, previous_state, state):
         myString = str(state[0])
+        total_value=0
 
-        # Our goal is to encourage moving and delivering packages, so we return positive values
-        # when the plane is in those states
-        if self.current_active_cargo < self.num_active_cargo: #This in theory rewards the agent for delivering cargo
-            return 25
-        elif myString == "PlaneState.PROCESSING": #If the plane is processing, return 10
-            return 5
-        elif myString == "PlaneState.MOVING": #If the plane is moving, return 1
-            return 1
-        else:
-            return 0
+        # if self.env.metrics.missed_deliveries > self.missed_deliveries_past:
+        #     total_value =- 50
+        # elif state[1] < previous_state[1]:
+        #     total_value =+ 50
+        # elif myString == "PlaneState.PROCESSING" and state[1] > 0: #If the plane is processing, return 5
+        #     total_value =+ 10
+        # elif myString == "PlaneState.PROCESSING": #If the plane is processing, return 5
+        #     total_value =+ 1
+        # if str(state) == str(previous_state): 
+        #     total_value =- 25
+        
+        return total_value
 
     #This was given by the challenge
     def reset(self, obs, observation_spaces=None, action_spaces=None, seed=None):
@@ -69,6 +78,41 @@ class Q_learning(Solution):
 
         # Create an action helper using our random number generator
         self._action_helper = ActionHelper(self._np_random)
+
+    def update_Qval(self, state, action, state_prime, manual_reward=0): #Most of this code will be the same as the update code below
+        # Bellman is defined as: Q(s,a) = (1 - learning_rate) * Q(s,a) + (learning_rate) * (reward + (discount_factor) * max Q(s', a))
+        s = str(state) #This is the string representation of our reduced_state var from last step
+        a = str(action) #This casts the action into a string
+        s_prime = str(state_prime) #This should be a string representation of the state we just entered
+
+        if s not in self.Q_table: #In this case, s is not in the Q-table, so we add it without any associated actions for now
+            self.Q_table.update({s : {}})
+
+        if a not in self.Q_table.get(s): #In this case, the action associate with s has not been seen yet, so we add it to the sub dict
+            self.Q_table.get(s).update({a : 0})
+
+        if s_prime not in self.Q_table: #In this case, s_prime is not in the Q-table, so we add it without any associated actions for now
+            self.Q_table.update({s_prime : {}})
+
+        
+        Q_s_a = self.Q_table.get(s).get(a) #Value of Q(s,a)
+        if manual_reward != 0:
+            reward = manual_reward
+        else:
+            reward = self.rewardFunction(previous_state=state, state=state_prime) #The reward for getting to Q(s', a)
+        if len(self.Q_table.get(s_prime).values()) > 0:
+            maxQ_s_prime_a = max(self.Q_table.get(s_prime).values()) #The maximum value of all variations of Q(s', a')
+        else:
+            maxQ_s_prime_a = 0
+
+
+        # Now we should be ready to finally use the bellman equation, which as a reminder is defined as:
+        # Q(s,a) = (1 - learning_rate) * Q(s,a) + (learning_rate) * (reward + (discount_factor) * max Q(s', a))
+        # As a reminder, for this version, we are rewarding the action rather than the resulting state.
+        # We are also updating the original state, not the new one
+        Bellman_solution = (1 - self.learning_rate) * (Q_s_a) + (self.learning_rate) * ((reward) + (self.discount_factor) * (maxQ_s_prime_a))
+        self.Q_table.get(s).update({a : Bellman_solution}) #Update the value
+
 
     #The meat of the algorithm, this is where the decisions are made in theory.
     def policies(self, obs, dones):
@@ -80,7 +124,6 @@ class Q_learning(Solution):
         gs = self.get_state(obs)
         active_cargo = gs["active_cargo"]
         self.current_active_cargo = len(active_cargo)
-
 
         #create a copy of the environment to play with
         environment_copy = copy.deepcopy(self.env)
@@ -101,14 +144,18 @@ class Q_learning(Solution):
         # Most of the variables that we find useful for our state are contained within the "agent" class
         # this variable takes the values that we want from the "agent" class and stores them. This is
         # what is recorded in our state-action pair dataframe. This can be adjusted as we like
-        reduced_state = [agent["state"], #current agent state
-            # agent["current_weight"], #current weight of agent
+        self.current_reduced_state = [agent["state"], #current agent state
+            agent["current_weight"], #current weight of agent
             # agent["max_weight"], #max weight of agent
             agent["available_routes"], #available routes
             agent["current_airport"]] #location of the agent
             # cargo_array] #array of available cargo
 
-        reduced_state_string = str(reduced_state)
+        if self.previous_reduced_state is None:
+            self.previous_reduced_state = self.current_reduced_state
+
+        reduced_state_string = str(self.current_reduced_state)
+        previous_reduced_state_string = str(self.previous_reduced_state)
         
         #Decision Making
         #=============================================================================================================================
@@ -119,16 +166,18 @@ class Q_learning(Solution):
         # Q-learning algorithm
 
         # First on the agenda is updating our epsilon value, which decides whether we are exploiting or exploring
+        if self.episode_num > 10:
+            episode_epsilon = self.epsilon * self.epsilon_decay_rate ** self.episode_num
+        else:
+            episode_epsilon = 1.00
 
-        episode_epsilon = self.epsilon * self.epsilon_decay_rate ** self.episode_num
-
-        if (np.random.rand() < episode_epsilon) or (reduced_state_string not in self.Q_table):
+        if (reduced_state_string not in self.Q_table) or (len(self.Q_table.get(reduced_state_string)) == 0) or (np.random.rand() < episode_epsilon):
             action = self._action_helper.sample_valid_actions(obs)
         else:
-            best_action = max(self.Q_table.get(reduced_state_string), key=self.Q_table.get(reduced_state_string).get)
+            best_action = max(self.Q_table.get(reduced_state_string)) #, key=self.Q_table.get(reduced_state_string).get)
             action = ast.literal_eval(best_action)
 
-
+        self.last_action_taken = str(action)
 
         # Updating and Managing the Q-Table
         #=============================================================================================================================
@@ -163,59 +212,75 @@ class Q_learning(Solution):
         #----------------------------------------------------------------------------------------------------------------------------------------
 
         
-        action_string = str(action)
+        # action_string = str(action)
 
-        if reduced_state_string not in self.Q_table: #If the Q state is not in the table, then we add it with a dictionary that associates that action with a value of 0
-            self.Q_table.update({reduced_state_string : {action_string : 0}})
+        # if reduced_state_string not in self.Q_table: #If the Q state is not in the table, then we add it with a dictionary that associates that action with a value of 0
+        #     self.Q_table.update({reduced_state_string : {action_string : 0}})
             
-        elif action_string not in self.Q_table.get(reduced_state_string): #In this case the state is in the Q_table but not the action, so we add it to the sub dictionary
-            self.Q_table.get(reduced_state_string).update({action_string : 0})
+        # elif action_string not in self.Q_table.get(reduced_state_string): #In this case the state is in the Q_table but not the action, so we add it to the sub dictionary
+        #     self.Q_table.get(reduced_state_string).update({action_string : 0})
             
-        # No matter what we will need to update the Q-value using the bellman equation
+        # # No matter what we will need to update the Q-value using the bellman equation
 
-        # Bellman is defined as: Q(s,a) = (1 - learning_rate) * Q(s,a) + (learning_rate) * (reward + (discount_factor) * max Q(s', a))
+        # # Bellman is defined as: Q(s,a) = (1 - learning_rate) * Q(s,a) + (learning_rate) * (reward + (discount_factor) * max Q(s', a))
 
-        current_Q_value = self.Q_table.get(reduced_state_string).get(action_string) # Grab the value of the associated state and action from the nested dictionaries
-        reward = self.rewardFunction(reduced_state) #Grab the reward from our reward function
+        # current_Q_value = self.Q_table.get(reduced_state_string).get(action_string) # Grab the value of the associated state and action from the nested dictionaries
+        # reward = self.rewardFunction(reduced_state) #Grab the reward from our reward function
 
-        # The last component of the Bellman equation is the maximum possible value from the resulting state.
-        # To do this we need to step forward in the simulation to figure out the resulting state. My current theory as to how to implement this without
-        # affecting the "real" environment is to create a copy of the environment and then call step on that environment. We can create an copy at the beginning of every
-        # call of this function, getting the most updated picture of the environment.
+        # # The last component of the Bellman equation is the maximum possible value from the resulting state.
+        # # To do this we need to step forward in the simulation to figure out the resulting state. My current theory as to how to implement this without
+        # # affecting the "real" environment is to create a copy of the environment and then call step on that environment. We can create an copy at the beginning of every
+        # # call of this function, getting the most updated picture of the environment.
 
-        new_obs, new_rewards, new_dones, _ = environment_copy.step(action) #Execute the action within our copy of the environment
+        # new_obs, new_rewards, new_dones, _ = environment_copy.step(action) #Execute the action within our copy of the environment
 
-        new_state = self.get_state(new_obs) #Get the state of the new observation
+        # new_state = self.get_state(new_obs) #Get the state of the new observation
 
 
-        # Now we can copy the code from above and perform the same data manipulation as earlier to achieve 
-        # The new state after taking the selected action. 
-        new_agent = new_state["agents"]["a_0"] #grab the agent, there is only one currently
+        # # Now we can copy the code from above and perform the same data manipulation as earlier to achieve 
+        # # The new state after taking the selected action. 
+        # new_agent = new_state["agents"]["a_0"] #grab the agent, there is only one currently
 
-        new_reduced_state = [new_agent["state"], #current agent state
-            # agent["current_weight"], #current weight of agent
-            # agent["max_weight"], #max weight of agent
-            new_agent["available_routes"], #available routes
-            new_agent["current_airport"]] #location of the agent
-            # cargo_array] #array of available cargo
+        # new_reduced_state = [new_agent["state"], #current agent state
+        #     # agent["current_weight"], #current weight of agent
+        #     # agent["max_weight"], #max weight of agent
+        #     new_agent["available_routes"], #available routes
+        #     new_agent["current_airport"]] #location of the agent
+        #     # cargo_array] #array of available cargo
 
-        new_reduced_state_string = str(new_reduced_state) #Convert the new reduced state to a string to search the dictionary
+        # new_reduced_state_string = str(new_reduced_state) #Convert the new reduced state to a string to search the dictionary
 
-        if new_reduced_state_string in self.Q_table: #If the new state is in the table then just find the max values, otherwise the value is 0
-            max_value_resulting_state = max(self.Q_table.get(new_reduced_state_string).values())
-        else:
-            max_value_resulting_state = 0
+        # if new_reduced_state_string in self.Q_table: #If the new state is in the table then just find the max values, otherwise the value is 0
+        #     max_value_resulting_state = max(self.Q_table.get(new_reduced_state_string).values())
+        # else:
+        #     max_value_resulting_state = 0
 
-        # Now we should be ready to finally use the bellman equation, which as a reminder is defined as:
-        # Q(s,a) = (1 - learning_rate) * Q(s,a) + (learning_rate) * (reward + (discount_factor) * max Q(s', a))
-        # As a reminder, for this version, we are rewarding the action rather than the resulting state.
-        # We are also updating the original state, not the new one
+        # # Now we should be ready to finally use the bellman equation, which as a reminder is defined as:
+        # # Q(s,a) = (1 - learning_rate) * Q(s,a) + (learning_rate) * (reward + (discount_factor) * max Q(s', a))
+        # # As a reminder, for this version, we are rewarding the action rather than the resulting state.
+        # # We are also updating the original state, not the new one
 
-        Bellman_solution = (1 - self.learning_rate) * (current_Q_value) + (self.learning_rate) * ((reward) + (self.discount_factor) * (max_value_resulting_state))
-        self.Q_table.get(reduced_state_string).update({action_string : Bellman_solution})
+        # Bellman_solution = (1 - self.learning_rate) * (current_Q_value) + (self.learning_rate) * ((reward) + (self.discount_factor) * (max_value_resulting_state))
+        # self.Q_table.get(reduced_state_string).update({action_string : Bellman_solution})
 
+
+        #----------------------------------------------------------------------------------------------------------------------------------------
+
+        # Option 3 : Keys are the state only, values are a dictionary which includes actions and their values.
+        #               However, this version waits until moving to the new state, updating the Q value for the
+        #               previous state. No deep copies of the environment of simulation required.
+        #               Additionally, the code for updating Q_values has been condensed, Option 2 will
+        #               likely be retired with this new option. The function is Update_Qval().
+
+        #----------------------------------------------------------------------------------------------------------------------------------------
+        
+        if self.actions_returned != 0:
+            self.update_Qval(self.previous_reduced_state, self.last_action_taken, self.current_reduced_state)
+        
+        self.previous_reduced_state = self.current_reduced_state
         self.actions_returned = self.actions_returned + 1
         self.num_active_cargo = self.current_active_cargo
+        self.missed_deliveries_past = self.env.metrics.missed_deliveries
         return action
 
 class Direct_Evaluation(Solution):
