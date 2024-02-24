@@ -1,5 +1,5 @@
 from airlift.evaluators.utils import doeval
-from solution.mysolution import MySolution
+from mysolution import MySolution
 import click
 
 @click.command()

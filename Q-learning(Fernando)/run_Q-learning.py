@@ -10,8 +10,7 @@ from airlift.envs.generators.world_generators import AirliftWorldGenerator
 from airlift.envs.renderer import FlatRenderer
 from airlift.solutions.solutions import doepisode
 
-from solution.mysolution import ShortestPath
-from solution.mysolution import Q_learning
+from Q_learning_Algorithm import Q_learning
 
 import pandas as pd
 
