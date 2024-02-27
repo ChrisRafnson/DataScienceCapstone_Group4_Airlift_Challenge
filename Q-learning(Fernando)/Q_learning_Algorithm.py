@@ -94,7 +94,7 @@ class Q_learning(Solution):
         else:
             reward = self.rewardFunction(previous_state=state, state=state_prime) #The reward for getting to Q(s', a)
         if len(self.Q_table.get(s_prime).values()) > 0:
-            maxQ_s_prime_a = min(self.Q_table.get(s_prime).values()) #The maximum value of all variations of Q(s', a')
+            maxQ_s_prime_a = max(self.Q_table.get(s_prime).values()) #The maximum value of all variations of Q(s', a')
         else:
             maxQ_s_prime_a = 0
 
@@ -144,7 +144,7 @@ class Q_learning(Solution):
         # Q-learning algorithm
 
         # First on the agenda is updating our epsilon value, which decides whether we are exploiting or exploring
-        if self.episode_num > 10:
+        if self.episode_num > 25:
             episode_epsilon = self.epsilon * self.epsilon_decay_rate ** self.episode_num
         else:
             episode_epsilon = 1.00
@@ -152,7 +152,7 @@ class Q_learning(Solution):
         if (reduced_state_string not in self.Q_table) or (len(self.Q_table.get(reduced_state_string)) == 0) or (np.random.rand() < episode_epsilon):
             action = self._action_helper.sample_valid_actions(obs)
         else:
-            best_action = min(self.Q_table.get(reduced_state_string), key=self.Q_table.get(reduced_state_string).get) #, key=self.Q_table.get(reduced_state_string).get)
+            best_action = max(self.Q_table.get(reduced_state_string), key=self.Q_table.get(reduced_state_string).get) #, key=self.Q_table.get(reduced_state_string).get)
             action = ast.literal_eval(best_action)
 
         self.last_action_taken = str(action)
