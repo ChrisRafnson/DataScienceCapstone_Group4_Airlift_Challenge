@@ -10,7 +10,7 @@ from airlift.envs.generators.world_generators import AirliftWorldGenerator
 from airlift.envs.renderer import FlatRenderer
 from airlift.solutions.solutions import doepisode
 
-from Q_learning_Algorithm import Q_learning
+from Monte_Carlo_Algorithm import Monte_Carlo_Method as MC
 
 import pandas as pd
 
@@ -89,15 +89,17 @@ env = AirliftEnv(
 # )
 
 
-#Initial value for episode number
-Q_learning.episode_num = 0
+
 
 iterations = 500  #This sets the number of episodes to run
 
 # Selects the solution class to use and initializes the object.
 # I created a few variables within the solution class that need to be initialized before it runs
-my_solution = Q_learning()
+my_solution = MC()
 my_solution.updateEnv(env)
+
+#Initial value for episode number
+my_solution.episode_num = 0
 
 # Run the episodes for the number of iterations specified
 for i in range(iterations):
@@ -110,7 +112,7 @@ for i in range(iterations):
                 env_seed=100,
                 solution_seed=i)
 
-    Q_learning.episode_num = Q_learning.episode_num + 1
+    my_solution.episode_num = my_solution.episode_num + 1
 
     # print("Missed Deliveries: {}\n".format(metrics.missed_deliveries))
     # print("Lateness:          {}\n".format(metrics.total_lateness))
@@ -122,11 +124,15 @@ for i in range(iterations):
     # else:
     #     reward = (1/metrics.score) * 100
 
-    my_solution.update_Qval(my_solution.previous_reduced_state, my_solution.last_action_taken, my_solution.current_reduced_state, manual_reward= -1 * metrics.score)
+    my_solution.updateTable(-1 * metrics.score)
+
+    my_solution.actions_returned = 0
+
+    my_solution.clearBuffer()
     
     print("EPISODE NUMBER: {}".format(i))
     print("         Score: {}".format(metrics.score)) #prints out the score for the episode that just occured
-    print(" Epsilon Value: {}".format(my_solution.epsilon * my_solution.epsilon_decay_rate ** my_solution.episode_num)) #prints out the score for the episode that just occured
+    # print(" Epsilon Value: {}".format(my_solution.epsilon * my_solution.epsilon_decay_rate ** my_solution.episode_num)) #prints out the score for the episode that just occured
     print("=============================================================================================")
 
 

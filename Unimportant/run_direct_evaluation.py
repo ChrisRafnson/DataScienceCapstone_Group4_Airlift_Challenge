@@ -61,18 +61,3 @@ env = AirliftEnv(
 #     ),
 #     renderer=FlatRenderer(show_routes=True)
 # )
-
-# Agent algorithm goes here
-def policy(obs):
-    actions = ActionHelper.sample_valid_actions(obs)
-    return actions
-
-obs = env.reset()
-while True:
-    actions = policy(obs)
-    obs, rewards, dones, infos = env.step(actions)
-    env.render()
-    if all(dones.values()):
-        break
-
-

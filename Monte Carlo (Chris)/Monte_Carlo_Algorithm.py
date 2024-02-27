@@ -15,37 +15,24 @@ import pandas as pd
 import random
 import ast
 
-class Q_learning(Solution):
+class Monte_Carlo_Method(Solution):
     actions_returned = 0
     episode_num = 0 #initialize episode number
-    learning_rate = .7
-    discount_factor = .95
-    epsilon = .30
-    epsilon_decay_rate = .98
-    Q_table = dict()
-
+    episode_buffer = {} #this will store all of the state action pairs and the cumulative rewards for the episode
+    MC_table = {} #The table of the state action pairs, we need this to make decisions lol
+    current_reduced_state = None
     previous_reduced_state = None
     last_action_taken = None
-    current_reduced_state = None
-
-    missed_deliveries_past = 0 #number of missed deliveries at the time of the last step
-
+   
     def __init__(self):
         super().__init__()
 
     #This function just allows us to pass in the master dataframe to use as our reference dataframe
     def updateReference(self, newDict):
-        self.Q_table = newDict
+        self.MC_table = newDict
 
     def updateEnv(self, env):
         self.env = env
-
-    def updateHyperParameters(self, newLearningRate, newDiscountRate, newEpsilon, newDecayRate):
-        self.learning_rate = newLearningRate
-        self.discount_factor = newDiscountRate
-        self.epsilon = newEpsilon
-        self.epsilon_decay_rate = newDecayRate
-
     
     def rewardFunction(self, previous_state, state):
         myString = str(state[0])
@@ -64,6 +51,36 @@ class Q_learning(Solution):
 
         return 0
 
+    def updateBuffer(self, reward):
+        #Now that we've ensured all state-actions are in the table, we can update the rewards
+
+        for state, actions in self.episode_buffer.items():
+            for action, value in actions.items():
+                value = self.episode_buffer.get(state).get(action)[0] + reward
+                N = self.episode_buffer.get(state).get(action)[1]
+                self.episode_buffer.get(state).update({action : [value, N]})
+
+        
+    def updateTable(self,final_reward):
+        #Before we can update the master table, we need to update the buffer one last time.
+        self.updateBuffer(final_reward)
+
+        for state, actions in self.episode_buffer.items():
+            for action, value in actions.items():
+                
+                if state not in self.MC_table:
+                    self.MC_table.update({state : {}})
+                if action not in self.MC_table.get(state):
+                    self.MC_table.get(state).update({action : [0, 0]})
+
+                N = self.MC_table.get(state).get(action)[1] + 1
+                value = (self.MC_table.get(state).get(action)[0] + self.episode_buffer.get(state).get(action)[0]) / N
+
+                self.MC_table.get(state).update({action : [value, N]})
+
+    def clearBuffer(self):
+        self.episode_buffer = {}
+
     #This was given by the challenge
     def reset(self, obs, observation_spaces=None, action_spaces=None, seed=None):
         # Currently, the evaluator will NOT pass in an observation space or action space (they will be set to None)
@@ -72,43 +89,7 @@ class Q_learning(Solution):
         # Create an action helper using our random number generator
         self._action_helper = ActionHelper(self._np_random)
 
-    def update_Qval(self, state, action, state_prime, manual_reward=0): #Most of this code will be the same as the update code below
-        # Bellman is defined as: Q(s,a) = (1 - learning_rate) * Q(s,a) + (learning_rate) * (reward + (discount_factor) * max Q(s', a))
-        s = str(state) #This is the string representation of our reduced_state var from last step
-        a = str(action) #This casts the action into a string
-        s_prime = str(state_prime) #This should be a string representation of the state we just entered
-
-        if s not in self.Q_table: #In this case, s is not in the Q-table, so we add it without any associated actions for now
-            self.Q_table.update({s : {}})
-
-        if a not in self.Q_table.get(s): #In this case, the action associate with s has not been seen yet, so we add it to the sub dict
-            self.Q_table.get(s).update({a : 0})
-
-        if s_prime not in self.Q_table: #In this case, s_prime is not in the Q-table, so we add it without any associated actions for now
-            self.Q_table.update({s_prime : {}})
-
-        
-        Q_s_a = self.Q_table.get(s).get(a) #Value of Q(s,a)
-        if manual_reward != 0:
-            reward = manual_reward
-        else:
-            reward = self.rewardFunction(previous_state=state, state=state_prime) #The reward for getting to Q(s', a)
-        if len(self.Q_table.get(s_prime).values()) > 0:
-            maxQ_s_prime_a = min(self.Q_table.get(s_prime).values()) #The maximum value of all variations of Q(s', a')
-        else:
-            maxQ_s_prime_a = 0
-
-        # Now we should be ready to finally use the bellman equation, which as a reminder is defined as:
-        # Q(s,a) = (1 - learning_rate) * Q(s,a) + (learning_rate) * (reward + (discount_factor) * max Q(s', a))
-        # As a reminder, for this version, we are rewarding the action rather than the resulting state.
-        # We are also updating the original state, not the new one
-        Bellman_solution = (1 - self.learning_rate) * (Q_s_a) + (self.learning_rate) * ((reward) + (self.discount_factor) * (maxQ_s_prime_a))
-        self.Q_table.get(s).update({a : Bellman_solution}) #Update the value
-
-
-    #The meat of the algorithm, this is where the decisions are made in theory.
     def policies(self, obs, dones, infos=0):
-
         #State Representation
         #=============================================================================================================================
 
@@ -141,37 +122,46 @@ class Q_learning(Solution):
         # #Select a random action
         # action = self._action_helper.sample_valid_actions(obs) #We don't have a policy yet, so we'll just use a random agent for now
 
-        # Q-learning algorithm
+        # Monte Carlo Decision Making
+        # Our policy will be to select the state-action with this highest value, like we did for Q-learning and Direct Evaluation
 
-        # First on the agenda is updating our epsilon value, which decides whether we are exploiting or exploring
-        if self.episode_num > 10:
-            episode_epsilon = self.epsilon * self.epsilon_decay_rate ** self.episode_num
-        else:
-            episode_epsilon = 1.00
-
-        if (reduced_state_string not in self.Q_table) or (len(self.Q_table.get(reduced_state_string)) == 0) or (np.random.rand() < episode_epsilon):
+        # We will have an inital exploration phase of ten episodes, where the random agent is our policy and we record the values
+        if self.episode_num < 25:
             action = self._action_helper.sample_valid_actions(obs)
-        else:
-            best_action = min(self.Q_table.get(reduced_state_string), key=self.Q_table.get(reduced_state_string).get) #, key=self.Q_table.get(reduced_state_string).get)
-            action = ast.literal_eval(best_action)
+        else: #After the ten episodes, we revert to the "greedy" policy
+            if (reduced_state_string not in self.MC_table) or (len(self.MC_table.get(reduced_state_string)) == 0):
+                action = self._action_helper.sample_valid_actions(obs)
+            else:
+                best_action = min(self.MC_table.get(reduced_state_string), key=self.MC_table.get(reduced_state_string).get) #, key=self.Q_table.get(reduced_state_string).get)
+                action = ast.literal_eval(best_action)
 
         self.last_action_taken = str(action)
 
-        # Updating and Managing the Q-Table
+        # Updating and Managing the Episode Buffer
         #============================================================================================================================
-        # Keys are the state only, values are a dictionary which includes actions and their values.
-        # However, this version waits until moving to the new state, updating the Q value for the
-        # previous state. 
+        # The buffer is stored as a nested dictionary. Monte Carlo operates under the idea of cumulative
+        # rewards throughout the episode, therefore every state-action pair needs to be updated. This inevitably adds computation time,
+        # which is why we are only doing first-look Monte Carlo.
         #============================================================================================================================
-        
-        if self.actions_returned != 0:
-            self.update_Qval(self.previous_reduced_state, self.last_action_taken, self.current_reduced_state)
-        
+
+        #Firstly, get the reward for this time step:
+        reward = self.rewardFunction(self.previous_reduced_state, self.current_reduced_state)
+
+        #Check if this state and action is in the table:
+        s = reduced_state_string #current state this timestep
+        a = self.last_action_taken #action taken this timestep
+
+        #Unseen State
+        if s not in self.episode_buffer:
+            self.episode_buffer.update({s:{}}) #Empty dict for s, ready to receive action
+
+        #Unseen Action
+        if a not in self.episode_buffer.get(s):
+            self.episode_buffer.get(s).update({a: [0, 1]})
+
+        self.updateBuffer(reward)
+
         #End of this step, update relevant values
         self.previous_reduced_state = self.current_reduced_state
         self.actions_returned = self.actions_returned + 1
-        self.num_active_cargo = self.current_active_cargo
-        self.missed_deliveries_past = self.env.metrics.missed_deliveries
         return action
-
- 
