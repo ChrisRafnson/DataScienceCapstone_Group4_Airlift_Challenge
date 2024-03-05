@@ -91,7 +91,7 @@ env = AirliftEnv(
 
 
 
-iterations = 500  #This sets the number of episodes to run
+iterations = 15  #This sets the number of episodes to run
 
 # Selects the solution class to use and initializes the object.
 # I created a few variables within the solution class that need to be initialized before it runs

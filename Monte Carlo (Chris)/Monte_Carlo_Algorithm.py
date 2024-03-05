@@ -18,7 +18,7 @@ import ast
 class Monte_Carlo_Method(Solution):
     actions_returned = 0
     episode_num = 0 #initialize episode number
-    episode_buffer = {} #this will store all of the state action pairs and the cumulative rewards for the episode
+    episode_buffer = [] #this will store all of the state action pairs and the cumulative rewards for the episode
     MC_table = {} #The table of the state action pairs, we need this to make decisions lol
     current_reduced_state = None
     previous_reduced_state = None
@@ -52,34 +52,41 @@ class Monte_Carlo_Method(Solution):
         return 0
 
     def updateBuffer(self, reward):
-        #Now that we've ensured all state-actions are in the table, we can update the rewards
-
-        for state, actions in self.episode_buffer.items():
-            for action, value in actions.items():
-                value = self.episode_buffer.get(state).get(action)[0] + reward
-                N = self.episode_buffer.get(state).get(action)[1]
-                self.episode_buffer.get(state).update({action : [value, N]})
-
+        #Look at every current entry and add the reward into the running total
+        for entry in self.episode_buffer:
+            entry[2] = entry[2] + reward
         
     def updateTable(self,final_reward):
         #Before we can update the master table, we need to update the buffer one last time.
         self.updateBuffer(final_reward)
 
-        for state, actions in self.episode_buffer.items():
-            for action, value in actions.items():
-                
-                if state not in self.MC_table:
-                    self.MC_table.update({state : {}})
-                if action not in self.MC_table.get(state):
-                    self.MC_table.get(state).update({action : [0, 0]})
 
-                N = self.MC_table.get(state).get(action)[1] + 1
-                value = (self.MC_table.get(state).get(action)[0] + self.episode_buffer.get(state).get(action)[0]) / N
+        #Note: State/Action pairs store both the value and the number of occurences
+        for entry in self.episode_buffer:
+            s = entry[0]
+            a = entry[1]
+            reward = entry[2]
 
-                self.MC_table.get(state).update({action : [value, N]})
+            #We need to first ensure that the state/action already exists in the Table
+            if s not in self.MC_table: 
+                self.MC_table.update({s : {}})
+
+            if a not in self.MC_table.get(s): 
+                self.MC_table.get(s).update({a : [0, 1]})
+
+            #Determine the new values
+            old_entry = self.MC_table.get(s).get(a)
+            old_val = old_entry[0]
+            old_num_occurences = old_entry[1]
+
+            new_num_occurences = old_num_occurences + 1
+            new_val = ((old_val * old_num_occurences) + reward) / new_num_occurences
+
+            #Put the new values back into the Table
+            self.MC_table.get(s).update({a : [new_val, new_num_occurences]})
 
     def clearBuffer(self):
-        self.episode_buffer = {}
+        self.episode_buffer = []
 
     #This was given by the challenge
     def reset(self, obs, observation_spaces=None, action_spaces=None, seed=None):
@@ -126,7 +133,7 @@ class Monte_Carlo_Method(Solution):
         # Our policy will be to select the state-action with this highest value, like we did for Q-learning and Direct Evaluation
 
         # We will have an inital exploration phase of ten episodes, where the random agent is our policy and we record the values
-        if self.episode_num < 25:
+        if self.episode_num < 10:
             action = self._action_helper.sample_valid_actions(obs)
         else: #After the ten episodes, we revert to the "greedy" policy
             if (reduced_state_string not in self.MC_table) or (len(self.MC_table.get(reduced_state_string)) == 0):
@@ -139,9 +146,7 @@ class Monte_Carlo_Method(Solution):
 
         # Updating and Managing the Episode Buffer
         #============================================================================================================================
-        # The buffer is stored as a nested dictionary. Monte Carlo operates under the idea of cumulative
-        # rewards throughout the episode, therefore every state-action pair needs to be updated. This inevitably adds computation time,
-        # which is why we are only doing first-look Monte Carlo.
+        # The buffer is a list since we are performing an every look MC method, it used to be a dictionary for first look method
         #============================================================================================================================
 
         #Firstly, get the reward for this time step:
@@ -151,13 +156,11 @@ class Monte_Carlo_Method(Solution):
         s = reduced_state_string #current state this timestep
         a = self.last_action_taken #action taken this timestep
 
-        #Unseen State
-        if s not in self.episode_buffer:
-            self.episode_buffer.update({s:{}}) #Empty dict for s, ready to receive action
+        #It does not matter whether or not our state or action has been seen before since the buffer records everything
 
-        #Unseen Action
-        if a not in self.episode_buffer.get(s):
-            self.episode_buffer.get(s).update({a: [0, 1]})
+        buffer_entry = [s, a, 0]
+
+        self.episode_buffer.append(buffer_entry)
 
         self.updateBuffer(reward)
 
