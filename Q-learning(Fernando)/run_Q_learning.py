@@ -122,14 +122,19 @@ for i in range(iterations):
     # else:
     #     reward = (1/metrics.score) * 100
 
-    reward = -1 * metrics.score
+    # reward = -1 * metrics.score
+    reward = -1 * my_solution.actions_returned
 
     my_solution.update_Qval(my_solution.previous_reduced_state, my_solution.last_action_taken, my_solution.current_reduced_state, reward)
     
     print("EPISODE NUMBER: {}".format(i))
     print("         Score: {}".format(metrics.score)) #prints out the score for the episode that just occured
     print(" Epsilon Value: {}".format(my_solution.epsilon * my_solution.epsilon_decay_rate ** my_solution.episode_num)) #prints out the score for the episode that just occured
+    print(" Last Action Returned: {}".format(my_solution.last_action_taken))
+    print(" Number of Actions Returned: {}".format(my_solution.actions_returned))
     print("=============================================================================================")
+
+    my_solution.actions_returned = 0
 
 
 

@@ -18,7 +18,7 @@ import ast
 class Q_learning(Solution):
     actions_returned = 0
     episode_num = 0 #initialize episode number
-    learning_rate = .7
+    learning_rate = .6
     discount_factor = .95
     epsilon = .30
     epsilon_decay_rate = .98
