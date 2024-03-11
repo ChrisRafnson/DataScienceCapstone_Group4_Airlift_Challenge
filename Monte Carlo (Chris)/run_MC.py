@@ -91,7 +91,7 @@ env = AirliftEnv(
 
 
 
-iterations = 15  #This sets the number of episodes to run
+iterations = 200  #This sets the number of episodes to run
 
 # Selects the solution class to use and initializes the object.
 # I created a few variables within the solution class that need to be initialized before it runs
@@ -124,7 +124,7 @@ for i in range(iterations):
     # else:
     #     reward = (1/metrics.score) * 100
 
-    my_solution.updateTable(-1 * metrics.score)
+    my_solution.updateTable(-1 * my_solution.actions_returned)
 
     my_solution.actions_returned = 0
 

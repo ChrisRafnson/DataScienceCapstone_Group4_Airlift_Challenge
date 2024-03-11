@@ -139,7 +139,8 @@ class Monte_Carlo_Method(Solution):
             if (reduced_state_string not in self.MC_table) or (len(self.MC_table.get(reduced_state_string)) == 0):
                 action = self._action_helper.sample_valid_actions(obs)
             else:
-                best_action = min(self.MC_table.get(reduced_state_string), key=self.MC_table.get(reduced_state_string).get) #, key=self.Q_table.get(reduced_state_string).get)
+                # best_action = max(self.MC_table.get(reduced_state_string), key=self.MC_table.get(reduced_state_string).get) #, key=self.Q_table.get(reduced_state_string).get)
+                best_action = max(self.MC_table.get(reduced_state_string), key=lambda k: self.MC_table.get(reduced_state_string)[k][0])
                 action = ast.literal_eval(best_action)
 
         self.last_action_taken = str(action)
