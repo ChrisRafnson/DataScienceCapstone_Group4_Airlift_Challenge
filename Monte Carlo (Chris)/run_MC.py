@@ -12,7 +12,7 @@ from airlift.solutions.solutions import doepisode
 
 from Monte_Carlo_Algorithm import Monte_Carlo_Method as MC
 
-import pandas as pd
+import json
 
 """
 Create an AirliftEnv using all the generators. There exist multiple generators for one thing. For example instead of using the
@@ -91,7 +91,7 @@ env = AirliftEnv(
 
 
 
-iterations = 15  #This sets the number of episodes to run
+iterations = 50  #This sets the number of episodes to run
 
 # Selects the solution class to use and initializes the object.
 # I created a few variables within the solution class that need to be initialized before it runs
@@ -124,7 +124,7 @@ for i in range(iterations):
     # else:
     #     reward = (1/metrics.score) * 100
 
-    my_solution.updateTable(-1 * metrics.score)
+    my_solution.updateTable(-1 * my_solution.actions_returned)
 
     my_solution.actions_returned = 0
 
@@ -134,6 +134,12 @@ for i in range(iterations):
     print("         Score: {}".format(metrics.score)) #prints out the score for the episode that just occured
     # print(" Epsilon Value: {}".format(my_solution.epsilon * my_solution.epsilon_decay_rate ** my_solution.episode_num)) #prints out the score for the episode that just occured
     print("=============================================================================================")
+
+json_data = json.dumps(my_solution.MC_table, indent=4)
+
+with open('MC_table.json', 'w') as fp:
+    fp.write(json_data)
+
 
 
 

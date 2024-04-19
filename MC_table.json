@@ -1,0 +1,550 @@
+{
+    "[<PlaneState.READY_FOR_TAKEOFF: 3>, 0, [3, 1], 2]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 3}}": [
+            -256.8082191780821,
+            73
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -655.3976945244945,
+            694
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 1}}": [
+            -515.5166666666667,
+            60
+        ]
+    },
+    "[<PlaneState.MOVING: 2>, 0, [3, 1], 2]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -204.64878048780477,
+            820
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 3}}": [
+            -402.222602739726,
+            292
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 1}}": [
+            -509.0077669902914,
+            515
+        ]
+    },
+    "[<PlaneState.WAITING: 0>, 0, [2, 1], 3]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 1}}": [
+            -160.30612244897955,
+            49
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -425.3809523809524,
+            21
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [0], 'cargo_to_unload': [], 'destination': 2}}": [
+            -314.44444444444446,
+            9
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [0], 'cargo_to_unload': [], 'destination': 1}}": [
+            -363.57142857142856,
+            7
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [0], 'cargo_to_unload': [], 'destination': 0}}": [
+            -465.22222222222223,
+            9
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 2}}": [
+            -396.6,
+            10
+        ]
+    },
+    "[<PlaneState.PROCESSING: 1>, 0, [2, 1], 3]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 1}}": [
+            -452.3137254901961,
+            102
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 2}}": [
+            -435.2881355932203,
+            118
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -453.7525773195876,
+            97
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [0], 'cargo_to_unload': [], 'destination': 0}}": [
+            -297.6,
+            5
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [0], 'cargo_to_unload': [], 'destination': 1}}": [
+            -416.8888888888889,
+            9
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [0], 'cargo_to_unload': [], 'destination': 2}}": [
+            -89.20365296803644,
+            1095
+        ]
+    },
+    "[<PlaneState.READY_FOR_TAKEOFF: 3>, 0, [2, 1], 3]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 2}}": [
+            -438.17857142857144,
+            28
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 1}}": [
+            -412.65384615384613,
+            26
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [0], 'cargo_to_unload': [], 'destination': 1}}": [
+            -421.42857142857144,
+            14
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -422.3243243243243,
+            37
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [0], 'cargo_to_unload': [], 'destination': 2}}": [
+            -447.52941176470586,
+            17
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [0], 'cargo_to_unload': [], 'destination': 0}}": [
+            -98.94339622641508,
+            530
+        ]
+    },
+    "[<PlaneState.MOVING: 2>, 0, [2, 1], 3]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 1}}": [
+            -444.2164948453609,
+            291
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 2}}": [
+            -444.3614864864865,
+            296
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -431.8644688644688,
+            273
+        ]
+    },
+    "[<PlaneState.WAITING: 0>, 0, [3, 1], 2]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 1}}": [
+            -412.04545454545456,
+            22
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -418.7857142857143,
+            14
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 3}}": [
+            -532.612244897959,
+            49
+        ]
+    },
+    "[<PlaneState.PROCESSING: 1>, 0, [3, 1], 2]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 3}}": [
+            -404.5813953488372,
+            43
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 1}}": [
+            -516.7757009345796,
+            107
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -207.90825688073397,
+            109
+        ]
+    },
+    "[<PlaneState.WAITING: 0>, 0, [2, 3], 1]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -321.73333333333335,
+            15
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 2}}": [
+            -338.11764705882354,
+            17
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 3}}": [
+            -421.7368421052632,
+            19
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [0], 'cargo_to_unload': [], 'destination': 3}}": [
+            -422.75,
+            4
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [0], 'cargo_to_unload': [], 'destination': 0}}": [
+            -629.9032258064515,
+            31
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [0], 'cargo_to_unload': [], 'destination': 2}}": [
+            -463.75,
+            4
+        ]
+    },
+    "[<PlaneState.PROCESSING: 1>, 0, [2, 3], 1]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 2}}": [
+            -451.5844155844156,
+            77
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -410.9866666666667,
+            75
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 3}}": [
+            -429.125,
+            64
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [0], 'cargo_to_unload': [], 'destination': 2}}": [
+            -650.4406779661017,
+            59
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [0], 'cargo_to_unload': [], 'destination': 3}}": [
+            -482.0,
+            4
+        ]
+    },
+    "[<PlaneState.READY_FOR_TAKEOFF: 3>, 0, [2, 3], 1]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 2}}": [
+            -516.2105263157895,
+            57
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 3}}": [
+            -413.17857142857144,
+            28
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [0], 'cargo_to_unload': [], 'destination': 2}}": [
+            -377.1666666666667,
+            6
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -654.5923753665695,
+            682
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [0], 'cargo_to_unload': [], 'destination': 0}}": [
+            -390.1111111111111,
+            9
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [0], 'cargo_to_unload': [], 'destination': 3}}": [
+            -442.90909090909093,
+            11
+        ]
+    },
+    "[<PlaneState.MOVING: 2>, 0, [2, 3], 1]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 2}}": [
+            -530.7037037037042,
+            459
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -425.0484581497797,
+            227
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 3}}": [
+            -408.3423423423424,
+            222
+        ]
+    },
+    "[<PlaneState.READY_FOR_TAKEOFF: 3>, 1, [2, 1], 3]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 2}}": [
+            -481.1764705882353,
+            17
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 1}}": [
+            -404.9166666666667,
+            12
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 1}}": [
+            -473.7692307692308,
+            13
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 2}}": [
+            -134.86956521739128,
+            46
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 0}}": [
+            -455.5238095238095,
+            21
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -431.1111111111111,
+            9
+        ]
+    },
+    "[<PlaneState.MOVING: 2>, 1, [2, 1], 3]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 0}}": [
+            -372.5698924731181,
+            93
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 2}}": [
+            -113.05114638447967,
+            567
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 2}}": [
+            -404.62820512820514,
+            78
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -364.1269841269842,
+            63
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 1}}": [
+            -388.51612903225805,
+            62
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 1}}": [
+            -397.44776119402985,
+            67
+        ]
+    },
+    "[<PlaneState.WAITING: 0>, 1, [2, 3], 1]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 3}}": [
+            -340.6666666666667,
+            3
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 0}}": [
+            -411.0,
+            4
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -330.0,
+            4
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 2}}": [
+            -366.5,
+            4
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 3}}": [
+            -92.0,
+            2
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 2}}": [
+            -420.3333333333333,
+            3
+        ]
+    },
+    "[<PlaneState.READY_FOR_TAKEOFF: 3>, 1, [2, 3], 1]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 2}}": [
+            -369.25,
+            8
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 2}}": [
+            -390.4166666666667,
+            12
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 0}}": [
+            -413.625,
+            8
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 3}}": [
+            -409.1666666666667,
+            6
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -255.4,
+            5
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 3}}": [
+            -492.875,
+            8
+        ]
+    },
+    "[<PlaneState.MOVING: 2>, 1, [2, 3], 1]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -504.2857142857143,
+            35
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 3}}": [
+            -456.6,
+            30
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 2}}": [
+            -541.1538461538462,
+            26
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 2}}": [
+            -487.4,
+            30
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 3}}": [
+            -484.6666666666667,
+            18
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 0}}": [
+            -492.2857142857143,
+            35
+        ]
+    },
+    "[<PlaneState.WAITING: 0>, 1, [3, 1], 2]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 3}}": [
+            -95.33333333333333,
+            36
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -200.66666666666666,
+            6
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 1}}": [
+            -158.75,
+            4
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 1}}": [
+            -280.25,
+            4
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 3}}": [
+            -346.0,
+            5
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 0}}": [
+            -345.3333333333333,
+            3
+        ]
+    },
+    "[<PlaneState.PROCESSING: 1>, 1, [3, 1], 2]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 1}}": [
+            -336.4,
+            5
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 3}}": [
+            -165.5,
+            4
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 3}}": [
+            -257.8,
+            5
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -325.6666666666667,
+            3
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 0}}": [
+            -357.57142857142856,
+            7
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 1}}": [
+            -166.16666666666666,
+            6
+        ]
+    },
+    "[<PlaneState.READY_FOR_TAKEOFF: 3>, 1, [3, 1], 2]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 3}}": [
+            -353.8,
+            5
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 0}}": [
+            -179.66666666666666,
+            3
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 1}}": [
+            -246.0,
+            3
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -252.33333333333334,
+            3
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 3}}": [
+            -217.25,
+            4
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 1}}": [
+            -70.0,
+            2
+        ]
+    },
+    "[<PlaneState.MOVING: 2>, 1, [3, 1], 2]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 0}}": [
+            -413.5882352941176,
+            17
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -392.6666666666667,
+            18
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 3}}": [
+            -408.73333333333335,
+            15
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 3}}": [
+            -387.35714285714283,
+            14
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 1}}": [
+            -387.26666666666665,
+            15
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 1}}": [
+            -392.2857142857143,
+            7
+        ]
+    },
+    "[<PlaneState.WAITING: 0>, 1, [2, 1], 3]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 1}}": [
+            -178.0,
+            3
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 2}}": [
+            -350.0,
+            3
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -291.0,
+            2
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 2}}": [
+            -291.0,
+            2
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 0}}": [
+            -420.3333333333333,
+            3
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 1}}": [
+            -345.3333333333333,
+            3
+        ]
+    },
+    "[<PlaneState.PROCESSING: 1>, 1, [2, 1], 3]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 0}}": [
+            -175.0,
+            2
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 1}}": [
+            -310.6666666666667,
+            3
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -291.0,
+            2
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 2}}": [
+            -291.0,
+            2
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 1}}": [
+            -255.33333333333334,
+            3
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 2}}": [
+            -92.0,
+            2
+        ]
+    },
+    "[<PlaneState.PROCESSING: 1>, 1, [2, 3], 1]": {
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 2}}": [
+            -337.0,
+            4
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 0}}": [
+            -341.3333333333333,
+            3
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [], 'destination': 3}}": [
+            -437.6,
+            5
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 0}}": [
+            -199.33333333333334,
+            3
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 3}}": [
+            -78.0,
+            2
+        ],
+        "{'a_0': {'priority': 1, 'cargo_to_load': [], 'cargo_to_unload': [0], 'destination': 2}}": [
+            -208.66666666666666,
+            3
+        ]
+    }
+}

@@ -133,13 +133,14 @@ class Monte_Carlo_Method(Solution):
         # Our policy will be to select the state-action with this highest value, like we did for Q-learning and Direct Evaluation
 
         # We will have an inital exploration phase of ten episodes, where the random agent is our policy and we record the values
-        if self.episode_num < 10:
+        if self.episode_num < 15:
             action = self._action_helper.sample_valid_actions(obs)
         else: #After the ten episodes, we revert to the "greedy" policy
             if (reduced_state_string not in self.MC_table) or (len(self.MC_table.get(reduced_state_string)) == 0):
                 action = self._action_helper.sample_valid_actions(obs)
             else:
-                best_action = min(self.MC_table.get(reduced_state_string), key=self.MC_table.get(reduced_state_string).get) #, key=self.Q_table.get(reduced_state_string).get)
+                # best_action = max(self.MC_table.get(reduced_state_string), key=self.MC_table.get(reduced_state_string).get) #, key=self.Q_table.get(reduced_state_string).get)
+                best_action = max(self.MC_table.get(reduced_state_string), key=lambda k: self.MC_table.get(reduced_state_string)[k][0])
                 action = ast.literal_eval(best_action)
 
         self.last_action_taken = str(action)
