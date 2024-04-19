@@ -144,12 +144,14 @@ class Q_learning(Solution):
         # Q-learning algorithm
 
         # First on the agenda is updating our epsilon value, which decides whether we are exploiting or exploring
-        if self.episode_num > 25:
+        if self.episode_num > 1:
             episode_epsilon = self.epsilon * self.epsilon_decay_rate ** self.episode_num
         else:
             episode_epsilon = 1.00
 
-        if (reduced_state_string not in self.Q_table) or (len(self.Q_table.get(reduced_state_string)) == 0) or (np.random.rand() < episode_epsilon):
+        random_val = np.random.rand()
+
+        if (reduced_state_string not in self.Q_table) or (len(self.Q_table.get(reduced_state_string)) == 0) or (random_val < episode_epsilon):
             action = self._action_helper.sample_valid_actions(obs)
         else:
             best_action = max(self.Q_table.get(reduced_state_string), key=self.Q_table.get(reduced_state_string).get) #, key=self.Q_table.get(reduced_state_string).get)

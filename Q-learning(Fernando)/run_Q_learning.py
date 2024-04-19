@@ -92,7 +92,7 @@ env = AirliftEnv(
 #Initial value for episode number
 Q_learning.episode_num = 0
 
-iterations = 500  #This sets the number of episodes to run
+iterations = 25  #This sets the number of episodes to run
 
 # Selects the solution class to use and initializes the object.
 # I created a few variables within the solution class that need to be initialized before it runs
@@ -108,7 +108,7 @@ for i in range(iterations):
                 render=False,
                 render_sleep_time=0, # Set this to 0.1 to slow down the simulation
                 env_seed=100,
-                solution_seed=i)
+                solution_seed=1)
 
     Q_learning.episode_num = Q_learning.episode_num + 1
 
@@ -116,14 +116,14 @@ for i in range(iterations):
     # print("Lateness:          {}\n".format(metrics.total_lateness))
     # print("Total flight cost: {}\n".format(metrics.total_cost))
 
-    # #Factor the episode score into the algorithm as one final reward
-    # if metrics.missed_deliveries > 0:
-    #     reward = -1 * metrics.score
-    # else:
-    #     reward = (1/metrics.score) * 100
+    #Factor the episode score into the algorithm as one final reward
+    if metrics.missed_deliveries > 0:
+        reward = -1 * metrics.score
+    else:
+        reward = (1/metrics.score) * 100
 
     # reward = -1 * metrics.score
-    reward = -1 * my_solution.actions_returned
+    # reward = -1 * my_solution.actions_returned
 
     my_solution.update_Qval(my_solution.previous_reduced_state, my_solution.last_action_taken, my_solution.current_reduced_state, reward)
     
