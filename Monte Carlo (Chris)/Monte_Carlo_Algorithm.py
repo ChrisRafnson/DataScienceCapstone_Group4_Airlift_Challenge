@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 import random
 import ast
+from Shortest_Path_Algorithm import ShortestPath as SP
 
 class Monte_Carlo_Method(Solution):
     actions_returned = 0
@@ -23,6 +24,13 @@ class Monte_Carlo_Method(Solution):
     current_reduced_state = None
     previous_reduced_state = None
     last_action_taken = None
+    epsilon = 1
+    epsilon_decay_rate = .99
+    episode_epsilon = 0
+    current_missed_deliveries = 0
+    previous_missed_deliveries = 0
+
+    random.seed(1234)
    
     def __init__(self):
         super().__init__()
@@ -36,27 +44,20 @@ class Monte_Carlo_Method(Solution):
     
     def rewardFunction(self, previous_state, state):
         myString = str(state[0])
-        total_value=0
+        total_value=-10
 
-        # if self.env.metrics.missed_deliveries > self.missed_deliveries_past:
-        #     total_value =- 50
-        # elif state[1] < previous_state[1]:
-        #     total_value =+ 50
-        # elif myString == "PlaneState.PROCESSING" and state[1] > 0: #If the plane is processing, return 5
-        #     total_value =+ 10
-        # elif myString == "PlaneState.PROCESSING": #If the plane is processing, return 5
-        #     total_value =+ 1
-        # if str(state) == str(previous_state): 
-        #     total_value =- 25
+        # if (self.current_missed_deliveries > self.previous_missed_deliveries):
+        #     total_value = total_value - 1000
 
-        return 0
+
+        return total_value
 
     def updateBuffer(self, reward):
         #Look at every current entry and add the reward into the running total
         for entry in self.episode_buffer:
             entry[2] = entry[2] + reward
         
-    def updateTable(self,final_reward):
+    def updateTable(self, final_reward):
         #Before we can update the master table, we need to update the buffer one last time.
         self.updateBuffer(final_reward)
 
@@ -103,7 +104,7 @@ class Monte_Carlo_Method(Solution):
         # get the complete state of the environment
         gs = self.get_state(obs)
         active_cargo = gs["active_cargo"]
-        self.current_active_cargo = len(active_cargo)
+        self.current_missed_deliveries = self.env.metrics.missed_deliveries
 
         agent = gs["agents"]["a_0"] #grab the agent, there is only one currently
 
@@ -132,18 +133,37 @@ class Monte_Carlo_Method(Solution):
         # Monte Carlo Decision Making
         # Our policy will be to select the state-action with this highest value, like we did for Q-learning and Direct Evaluation
 
-        # We will have an inital exploration phase of ten episodes, where the random agent is our policy and we record the values
-        if self.episode_num < 15:
-            action = self._action_helper.sample_valid_actions(obs)
-        else: #After the ten episodes, we revert to the "greedy" policy
-            if (reduced_state_string not in self.MC_table) or (len(self.MC_table.get(reduced_state_string)) == 0):
+        # # We will have an inital exploration phase of ten episodes, where the random agent is our policy and we record the values
+        # if self.episode_num < 1:
+        #     action = self._action_helper.sample_valid_actions(obs)
+        # else: #After the ten episodes, we revert to the "greedy" policy
+        #     if (reduced_state_string not in self.MC_table) or (len(self.MC_table.get(reduced_state_string)) == 0):
+        #         action = self._action_helper.sample_valid_actions(obs)
+        #     else:
+        #         # best_action = max(self.MC_table.get(reduced_state_string), key=self.MC_table.get(reduced_state_string).get) #, key=self.Q_table.get(reduced_state_string).get)
+        #         best_action = max(self.MC_table.get(reduced_state_string), key=lambda k: self.MC_table.get(reduced_state_string)[k][0])
+        #         action = ast.literal_eval(best_action)
+
+        #EXPERIMENT WITH EPSILON GREEDY
+        # First on the agenda is updating our epsilon value, which decides whether we are exploiting or exploring
+        # if self.episode_num > 0:
+        #     self.episode_epsilon = self.epsilon * self.epsilon_decay_rate ** self.episode_num
+        # else:
+        #     self.episode_epsilon = 1.00
+
+        self.episode_epsilon = self.epsilon * self.epsilon_decay_rate ** self.episode_num
+
+        random_val = np.random.rand()
+
+        if (reduced_state_string not in self.MC_table) or (len(self.MC_table.get(reduced_state_string)) == 0) or (random_val < self.episode_epsilon):
                 action = self._action_helper.sample_valid_actions(obs)
-            else:
-                # best_action = max(self.MC_table.get(reduced_state_string), key=self.MC_table.get(reduced_state_string).get) #, key=self.Q_table.get(reduced_state_string).get)
-                best_action = max(self.MC_table.get(reduced_state_string), key=lambda k: self.MC_table.get(reduced_state_string)[k][0])
-                action = ast.literal_eval(best_action)
+        else:
+            best_action = max(self.MC_table.get(reduced_state_string), key=lambda k: self.MC_table.get(reduced_state_string)[k][0])
+            action = ast.literal_eval(best_action)
 
         self.last_action_taken = str(action)
+        # self.expert.reset(obs)
+        # action = self.expert.policies(obs, dones)
 
         # Updating and Managing the Episode Buffer
         #============================================================================================================================
@@ -166,6 +186,9 @@ class Monte_Carlo_Method(Solution):
         self.updateBuffer(reward)
 
         #End of this step, update relevant values
+        self.previous_missed_deliveries = self.current_missed_deliveries
         self.previous_reduced_state = self.current_reduced_state
         self.actions_returned = self.actions_returned + 1
         return action
+    
+

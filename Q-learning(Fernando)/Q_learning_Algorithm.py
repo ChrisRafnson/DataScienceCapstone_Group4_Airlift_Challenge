@@ -23,6 +23,7 @@ class Q_learning(Solution):
     epsilon = .30
     epsilon_decay_rate = .98
     Q_table = dict()
+    random.seed(1234)
 
     previous_reduced_state = None
     last_action_taken = None
@@ -62,7 +63,7 @@ class Q_learning(Solution):
         # if str(state) == str(previous_state): 
         #     total_value =- 25
 
-        return 0
+        return -1
 
     #This was given by the challenge
     def reset(self, obs, observation_spaces=None, action_spaces=None, seed=None):
@@ -102,7 +103,7 @@ class Q_learning(Solution):
         # Q(s,a) = (1 - learning_rate) * Q(s,a) + (learning_rate) * (reward + (discount_factor) * max Q(s', a))
         # As a reminder, for this version, we are rewarding the action rather than the resulting state.
         # We are also updating the original state, not the new one
-        Bellman_solution = (1 - self.learning_rate) * (Q_s_a) + (self.learning_rate) * ((reward) + (self.discount_factor) * (maxQ_s_prime_a))
+        Bellman_solution = -1 *( (1 - self.learning_rate) * (Q_s_a) + (self.learning_rate) * ((reward) + (self.discount_factor) * (maxQ_s_prime_a)) )
         self.Q_table.get(s).update({a : Bellman_solution}) #Update the value
 
 
@@ -149,7 +150,7 @@ class Q_learning(Solution):
         else:
             episode_epsilon = 1.00
 
-        random_val = np.random.rand()
+        random_val = random.random()
 
         if (reduced_state_string not in self.Q_table) or (len(self.Q_table.get(reduced_state_string)) == 0) or (random_val < episode_epsilon):
             action = self._action_helper.sample_valid_actions(obs)

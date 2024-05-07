@@ -87,9 +87,9 @@ env3 = AirliftEnv(
 
 
 # Configuration parameters
-version = "v4"  # You can change this to reflect the version of the simulation
-run = "01"
-env_config = "env1"  # Environment configuration used
+version = "v5"  # You can change this to reflect the version of the simulation
+run = "02"
+env_config = "env2"  # Environment configuration used
 
 # Directory setup
 base_dir = os.path.join("Q-learning(Fernando)/simulation_results", version)
@@ -106,18 +106,19 @@ with open(filename, mode='w', newline='') as file:
 #Initial value for episode number
 Q_learning.episode_num = 0
 
-iterations = 150  #This sets the number of episodes to run
+iterations = 1500  #This sets the number of episodes to run
 
 # Selects the solution class to use and initializes the object.
 # I created a few variables within the solution class that need to be initialized before it runs
 my_solution = Q_learning()
-my_solution.updateEnv(env)
+my_solution.updateEnv(env2)
+my_solution.epsilon_decay_rate = .995
 
 # Run the episodes for the number of iterations specified
 for i in range(iterations):
 
     env_info, metrics, time_taken, total_solution_time = \
-    doepisode(env,
+    doepisode(env2,
                 solution=my_solution,
                 render=False,
                 render_sleep_time=0, # Set this to 0.1 to slow down the simulation
@@ -130,17 +131,14 @@ for i in range(iterations):
     # print("Lateness:          {}\n".format(metrics.total_lateness))
     # print("Total flight cost: {}\n".format(metrics.total_cost))
 
-    # Factor the episode score into the algorithm as one final reward
+    #Factor the episode score into the algorithm as one final reward
     # if metrics.missed_deliveries > 0:
     #     reward = -1 * metrics.score
     # else:
     #     reward = (1/metrics.score) * 100
 
     # reward = -1 * metrics.score
-
-    # reward = -1 * my_solution.actions_returned
-
-    reward = (-1 * metrics.score) + (-1 * my_solution.actions_returned)
+    reward = (-1 * my_solution.actions_returned ** 2) - (metrics.score ** 2)
 
     my_solution.update_Qval(my_solution.previous_reduced_state, my_solution.last_action_taken, my_solution.current_reduced_state, reward)
 

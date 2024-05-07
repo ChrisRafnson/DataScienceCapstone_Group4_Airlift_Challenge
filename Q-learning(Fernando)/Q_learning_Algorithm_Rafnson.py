@@ -18,12 +18,14 @@ import ast
 class Q_learning(Solution):
     actions_returned = 0
     episode_num = 0 #initialize episode number
-    learning_rate = .6
-    discount_factor = .95
-    epsilon = .30
+    learning_rate = .5
+    discount_factor = .98
+    epsilon = 1.0
     epsilon_decay_rate = .98
     episode_epsilon = 0
     Q_table = dict()
+    current_missed_deliveries = 0
+    previous_missed_deliveries = 0
 
     previous_reduced_state = None
     last_action_taken = None
@@ -63,7 +65,14 @@ class Q_learning(Solution):
         # if str(state) == str(previous_state): 
         #     total_value =- 25
 
-        return 0
+        total_value=+ 10
+
+        # if (self.current_missed_deliveries > self.previous_missed_deliveries):
+        #     total_value = total_value - 1000
+
+
+        return total_value
+
 
     #This was given by the challenge
     def reset(self, obs, observation_spaces=None, action_spaces=None, seed=None):
@@ -117,6 +126,7 @@ class Q_learning(Solution):
         gs = self.get_state(obs)
         active_cargo = gs["active_cargo"]
         self.current_active_cargo = len(active_cargo)
+        self.current_missed_deliveries = self.env.metrics.missed_deliveries
 
         agent = gs["agents"]["a_0"] #grab the agent, there is only one currently
 
@@ -145,11 +155,9 @@ class Q_learning(Solution):
         # Q-learning algorithm
 
         # First on the agenda is updating our epsilon value, which decides whether we are exploiting or exploring
-        if self.episode_num > 1:
+        if self.episode_num > 0:
             self.episode_epsilon = self.epsilon * self.epsilon_decay_rate ** self.episode_num
 
-            if self.episode_epsilon < .05:
-                self.episode_epsilon = 0
         else:
             self.episode_epsilon = 1.00
 
@@ -174,10 +182,10 @@ class Q_learning(Solution):
             self.update_Qval(self.previous_reduced_state, self.last_action_taken, self.current_reduced_state)
         
         #End of this step, update relevant values
+        self.previous_missed_deliveries = self.current_missed_deliveries
         self.previous_reduced_state = self.current_reduced_state
         self.actions_returned = self.actions_returned + 1
         self.num_active_cargo = self.current_active_cargo
-        self.missed_deliveries_past = self.env.metrics.missed_deliveries
         return action
 
  
